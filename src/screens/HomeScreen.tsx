@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useDailyQuote } from '../hooks/useDailyQuote';
 import { useFavorites } from '../hooks/useFavorites';
 import { QuoteCard } from '../components/QuoteCard';
+import { CommonHeader } from '../components/common/CommonHeader';
 import type { RootStackParamList } from '../navigation/types';
+import { AnimatedGradientBackground } from '../components/common/AnimatedGradientBackground';
+import { formatDateHuman } from '../utils/date';
 
 function buildShareMessage(text: string, author?: string) {
   return author ? `${text}\n- ${author}` : text;
@@ -23,6 +25,7 @@ export function HomeScreen({
 }: NativeStackScreenProps<RootStackParamList, 'Home'>) {
   const { quote, loading, error } = useDailyQuote();
   const { isFavorited, toggleFavorite } = useFavorites();
+  const todayLabel = formatDateHuman(new Date());
 
   const onShare = useCallback(async () => {
     if (!quote) return;
@@ -34,22 +37,21 @@ export function HomeScreen({
   }, [quote]);
 
   return (
-    <LinearGradient colors={['#E0F2FE', '#FFFFFF', '#FCE7F3']} style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.title}>Daily Quote</Text>
-          <Text style={styles.subtitle}>A thought for today</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.favoritesButton}
-          onPress={() => navigation.navigate('Favorites')}
-          accessibilityRole="button"
-          accessibilityLabel="Go to favorites"
-        >
-          <Text style={styles.favoritesButtonText}>Favorites</Text>
-        </TouchableOpacity>
-      </View>
+    <AnimatedGradientBackground>
+      <CommonHeader
+        title="Daily Quote"
+        subtitle={`Quote for ${todayLabel}`}
+        right={
+          <TouchableOpacity
+            style={styles.favoritesButton}
+            onPress={() => navigation.navigate('Favorites')}
+            accessibilityRole="button"
+            accessibilityLabel="Go to favorites"
+          >
+            <Text style={styles.favoritesButtonText}>Favorites</Text>
+          </TouchableOpacity>
+        }
+      />
 
       <View style={styles.content}>
         {loading ? (
@@ -69,35 +71,12 @@ export function HomeScreen({
           <Text style={styles.errorText}>No quote available.</Text>
         )}
       </View>
-    </LinearGradient>
+    </AnimatedGradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { flex: 1, justifyContent: 'flex-start' },
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 6,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  headerLeft: {
-    flex: 1,
-    paddingRight: 10,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    color: '#6B7280',
-  },
+  content: { justifyContent: 'flex-start' },
   favoritesButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,

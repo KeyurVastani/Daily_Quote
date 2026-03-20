@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View, Share } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { useFavorites } from '../hooks/useFavorites';
 import type { Quote } from '../types/quote';
 import { QuoteCard } from '../components/QuoteCard';
+import { CommonHeader } from '../components/common/CommonHeader';
+import { AnimatedGradientBackground } from '../components/common/AnimatedGradientBackground';
 
 function buildShareMessage(quote: Quote) {
   return quote.author ? `${quote.text}\n- ${quote.author}` : quote.text;
@@ -21,11 +22,11 @@ export function FavoritesScreen() {
   }, []);
 
   return (
-    <LinearGradient colors={['#E0F2FE', '#FFFFFF', '#FCE7F3']} style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Your Favorites</Text>
-        <Text style={styles.subtitle}>{favorites.length} saved</Text>
-      </View>
+    <AnimatedGradientBackground>
+      <CommonHeader
+        title="Your Favorites"
+        subtitle={`${favorites.length} saved`}
+      />
 
       {loading ? (
         <View style={styles.loading}>
@@ -50,27 +51,11 @@ export function FavoritesScreen() {
           )}
         />
       )}
-    </LinearGradient>
+    </AnimatedGradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 10,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#111827',
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    color: '#6B7280',
-  },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   empty: { flex: 1, paddingHorizontal: 16, justifyContent: 'center' },
   emptyText: { color: '#6B7280', fontSize: 14, lineHeight: 20 },

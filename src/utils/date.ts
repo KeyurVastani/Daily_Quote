@@ -10,3 +10,12 @@ export function dateToKey(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+export function formatDateHuman(date: Date): string {
+  // Use the device locale, but keep output readable for subtitles.
+  return date.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
