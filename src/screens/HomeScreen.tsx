@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     color: '#2563EB',
   },
   categoryBlock: {
-    marginTop: 6,
+    marginTop: 16,
   },
   categoryLabel: {
     fontSize: 12,

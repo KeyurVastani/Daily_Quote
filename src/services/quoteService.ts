@@ -2,7 +2,7 @@ import { QUOTES } from '../constants/quotes';
 import type { Quote } from '../types/quote';
 import { dateToKey } from '../utils/date';
 import { fetchQuoteOfTheDayFromApi } from '../api/quotesApi';
-import { mmkv } from '../state/mmkv';
+import { appEncryptedStorage } from '../state/appEncryptedStorage';
 
 const DAILY_QUOTE_STORAGE_KEY_PREFIX = 'daily_quotes:quote_of_the_day:';
 
@@ -28,13 +28,17 @@ export async function getDailyQuote(date: Date = new Date()): Promise<Quote> {
   const key = dateToKey(date);
   const storageKey = `${DAILY_QUOTE_STORAGE_KEY_PREFIX}${key}`;
 
-  const cached = mmkv.getString(storageKey);
-  if (cached) {
-    try {
-      return JSON.parse(cached) as Quote;
-    } catch {
-      // Fall through to refetch.
+  try {
+    const cached = await appEncryptedStorage.getItem(storageKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached) as Quote;
+      } catch {
+        // Fall through to refetch.
+      }
     }
+  } catch {
+    // Fall through to refetch.
   }
 
   try {
@@ -47,12 +51,11 @@ export async function getDailyQuote(date: Date = new Date()): Promise<Quote> {
       categories: apiQuote.categories,
     };
 
-    mmkv.set(storageKey, JSON.stringify(quote));
+    await appEncryptedStorage.setItem(storageKey, JSON.stringify(quote));
     return quote;
   } catch {
     const fallback = getFallbackDailyQuote(date);
-    mmkv.set(storageKey, JSON.stringify(fallback));
+    await appEncryptedStorage.setItem(storageKey, JSON.stringify(fallback));
     return fallback;
   }
 }
-

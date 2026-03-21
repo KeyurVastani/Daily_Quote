@@ -1,5 +1,5 @@
 import type { Quote } from '../types/quote';
-import { mmkv } from './mmkv';
+import { appEncryptedStorage } from './appEncryptedStorage';
 
 const FAVORITES_STORAGE_KEY = 'daily_quotes:favorites';
 
@@ -9,7 +9,7 @@ function normalizeFavorites(parsed: unknown): Quote[] {
 }
 
 export async function loadFavorites(): Promise<Quote[]> {
-  const raw = mmkv.getString(FAVORITES_STORAGE_KEY);
+  const raw = await appEncryptedStorage.getItem(FAVORITES_STORAGE_KEY);
   if (!raw) return [];
   try {
     return normalizeFavorites(JSON.parse(raw));
@@ -19,6 +19,5 @@ export async function loadFavorites(): Promise<Quote[]> {
 }
 
 export async function persistFavorites(favorites: Quote[]): Promise<void> {
-  mmkv.set(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+  await appEncryptedStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
 }
-

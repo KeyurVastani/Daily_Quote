@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { mmkv } from '../state/mmkv';
+import { appEncryptedStorage } from '../state/appEncryptedStorage';
 
 const STORAGE_KEY = 'ui:selected_quote_categories';
 
@@ -8,22 +8,32 @@ export function usePersistedCategorySelection() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const raw = mmkv.getString(STORAGE_KEY);
-    if (raw) {
+    let cancelled = false;
+
+    async function load() {
       try {
+        const raw = await appEncryptedStorage.getItem(STORAGE_KEY);
+        if (cancelled || !raw) return;
         const parsed = JSON.parse(raw) as unknown;
         if (Array.isArray(parsed) && parsed.every((x) => typeof x === 'string')) {
           setSelected(parsed);
         }
       } catch {
         // ignore
+      } finally {
+        if (!cancelled) setHydrated(true);
       }
     }
-    setHydrated(true);
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const persist = useCallback((next: string[]) => {
-    mmkv.set(STORAGE_KEY, JSON.stringify(next));
+    appEncryptedStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
   }, []);
 
   const toggle = useCallback(
