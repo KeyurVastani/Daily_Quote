@@ -3,6 +3,9 @@ import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import LinearGradient from 'react-native-linear-gradient';
 import Clipboard from '@react-native-clipboard/clipboard';
 import type { Quote } from '../types/quote';
+import { Copy, CopyCheck, Heart, HeartOff, Share2 } from 'lucide-react-native';
+
+const ACTION_ICON_SIZE = 16;
 
 export function QuoteCard({
   quote,
@@ -50,9 +53,9 @@ export function QuoteCard({
           useNativeDriver: true,
         }),
       ]).start();
+    } else {
+      saveIconScale.setValue(1);
     }
-
-    saveIconScale.setValue(1);
   }, [isFavorite, onToggleFavorite, saveIconScale]);
 
   const copyText = () => {
@@ -116,28 +119,17 @@ export function QuoteCard({
                       : ['rgba(17,24,39,0.06)', 'rgba(17,24,39,0.02)']
                   }
                   style={[
-                    styles.saveButton,
+                    styles.iconActionButton,
                     isFavorite ? styles.saveButtonActive : styles.saveButtonInactive,
                   ]}
                 >
-                  <View style={styles.saveInner}>
-                    <View
-                      style={[
-                        styles.saveIconWrap,
-                        isFavorite ? styles.saveIconWrapActive : styles.saveIconWrapInactive,
-                      ]}
-                    >
-                      <Animated.Text
-                        style={[
-                          styles.saveIcon,
-                          isFavorite ? styles.saveIconActive : styles.saveIconInactive,
-                          { transform: [{ scale: saveIconScale }] },
-                        ]}
-                      >
-                        {isFavorite ? '★' : '☆'}
-                      </Animated.Text>
-                    </View>
-                  </View>
+                  <Animated.View style={{ transform: [{ scale: saveIconScale }] }}>
+                    {isFavorite ? (
+                      <Heart color="#FFFFFF" size={ACTION_ICON_SIZE} fill="#FFFFFF" />
+                    ) : (
+                      <Heart color="#DB2777" size={ACTION_ICON_SIZE} />
+                    )}
+                  </Animated.View>
                 </LinearGradient>
               </TouchableOpacity>
             )}
@@ -155,9 +147,13 @@ export function QuoteCard({
                     ? ['rgba(20,184,166,0.95)', 'rgba(59,130,246,0.65)']
                     : ['rgba(20,184,166,0.22)', 'rgba(59,130,246,0.14)']
                 }
-                style={styles.copyButton}
+                style={styles.iconActionButton}
               >
-                <Text style={styles.copyIcon}>{isCopied ? '✓' : '⧉'}</Text>
+                {isCopied ? (
+                  <CopyCheck color="#FFFFFF" size={ACTION_ICON_SIZE} />
+                ) : (
+                  <Copy color="#0F172A" size={ACTION_ICON_SIZE} />
+                )}
               </LinearGradient>
             </TouchableOpacity>
 
@@ -170,10 +166,10 @@ export function QuoteCard({
                 activeOpacity={0.9}
               >
                 <LinearGradient
-                  colors={['rgba(59,130,246,0.95)', 'rgba(37,99,235,0.88)']}
-                  style={styles.shareButton}
+                  colors={['rgba(59,130,246,0.55)', 'rgba(37,99,235,0.88)']}
+                  style={styles.iconActionButton}
                 >
-                    <Text style={styles.shareIcon}>↗</Text>
+                  <Share2 color="#FFFFFF" size={ACTION_ICON_SIZE} />
                 </LinearGradient>
               </TouchableOpacity>
             )}
@@ -261,12 +257,11 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     overflow: 'hidden',
   },
-  saveButton: {
-    flexDirection: 'row',
+  iconActionButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
     height: 40,
+    width: 40,
     borderRadius: 14,
   },
   saveButtonActive: {
@@ -280,96 +275,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(190,24,93,0.18)',
   },
-  saveIcon: {
-    fontSize: 18,
-    fontWeight: '900',
-    lineHeight: 19,
-    marginBottom: 3,
-  },
-  saveInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveIconWrap: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  saveIconWrapActive: {
-    backgroundColor: 'rgba(255,255,255,0.22)',
-  },
-  saveIconWrapInactive: {
-    backgroundColor: 'rgba(190,24,93,0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(190,24,93,0.18)',
-  },
-  saveIconActive: {
-    color: '#FFFFFF',
-  },
-  saveIconInactive: {
-    color: '#DB2777',
-  },
-  actionText: {
-    fontSize: 13,
-    fontWeight: '900',
-    lineHeight: 18,
-    marginLeft: 8,
-  },
-  actionTextActive: {
-    color: '#FFFFFF',
-  },
-  actionTextInactive: {
-    color: '#0F172A',
-  },
   shareButtonTouchable: {
     marginLeft: 10,
     padding: 0,
     borderRadius: 14,
     overflow: 'hidden',
   },
-  shareButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    height: 40,
-    borderRadius: 14,
-  },
   copyButtonTouchable: {
     padding: 0,
     borderRadius: 14,
     overflow: 'hidden',
     marginLeft: 10,
-  },
-  copyButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-    width: 40,
-    borderRadius: 14,
-  },
-  copyIcon: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '900',
-    lineHeight: 18,
-  },
-  shareIcon: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '900',
-    marginRight: 0,
-    lineHeight: 18,
-  },
-  shareText: {
-    fontSize: 13,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    lineHeight: 18,
   },
 });
 
