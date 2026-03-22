@@ -251,6 +251,8 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
     elevation: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   chipOuterActive: {
     borderWidth: 0,
@@ -261,19 +263,26 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   chipFill: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    // paddingHorizontal: 15,
+    // paddingVertical: 10,
+    height: 40,
+    minWidth: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 999,
   },
   chipInactiveInner: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    height: 40,
+    minWidth: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   chipText: {
     fontSize: 13,
     fontWeight: '700',
     color: '#475569',
     letterSpacing: 0.15,
+    marginHorizontal: 10,
   },
   chipTextActive: {
     fontSize: 13,
@@ -283,6 +292,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(255, 255, 255, 0.35)',
     textShadowOffset: { width: 0, height: 0.5 },
     textShadowRadius: 2,
+    marginHorizontal: 10,
   },
   actions: {
     marginTop: 22,
@@ -308,7 +318,6 @@ const styles = StyleSheet.create({
   primaryGradient: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
     minHeight: 56,
   },
   primaryInner: {
