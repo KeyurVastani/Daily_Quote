@@ -44,9 +44,9 @@ export function DreamyHomeBackground({ children }: Props) {
 
       {/* Clouds */}
       <View pointerEvents="none" style={styles.cloudLayer}>
-        <View style={[styles.cloud, styles.cloud1]} />
+        {/* <View style={[styles.cloud, styles.cloud1]} />
         <View style={[styles.cloud, styles.cloud2]} />
-        <View style={[styles.cloud, styles.cloud3]} />
+        <View style={[styles.cloud, styles.cloud3]} /> */}
       </View>
 
       <Animated.View

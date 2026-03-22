@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Heart, Lightbulb, Sparkles, Feather, Sun } from 'lucide-react-native';
+import { Heart, Lightbulb, Sparkles, Feather, Sun, RefreshCw } from 'lucide-react-native';
+import { fetchRandomQuote, fetchRandomQuoteByCategories } from '../api/quotesApi';
+import { readSelectedCategoriesFromStorage } from '../hooks/usePersistedCategorySelection';
 import { useDailyQuote } from '../hooks/useDailyQuote';
 import { useFavorites } from '../hooks/useFavorites';
 import { ExploreRoundHeaderButton } from '../components/ExploreRoundHeaderButton';
@@ -38,6 +40,36 @@ export function HomeScreen({
   const [tab, setTab] = useState<HomeTab>('today');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [categoryQuote, setCategoryQuote] = useState<Quote | null>(null);
+  const [newQuoteLoading, setNewQuoteLoading] = useState(false);
+  const [newQuoteError, setNewQuoteError] = useState<string | null>(null);
+
+  const loadNewQuote = useCallback(async () => {
+    try {
+      setNewQuoteLoading(true);
+      setNewQuoteError(null);
+      const selected = await readSelectedCategoriesFromStorage();
+      const trimmed = selected.map((c) => c.trim()).filter(Boolean);
+
+      const apiQuote =
+        trimmed.length > 0
+          ? await fetchRandomQuoteByCategories(trimmed)
+          : await fetchRandomQuote();
+
+      const q: Quote = {
+        id: `new:${Date.now()}`,
+        text: apiQuote.quote,
+        author: apiQuote.author,
+        work: apiQuote.work,
+        categories: apiQuote.categories,
+      };
+      setCategoryQuote(q);
+      setTab('new');
+    } catch {
+      setNewQuoteError('Could not load a quote. Check your connection and try again.');
+    } finally {
+      setNewQuoteLoading(false);
+    }
+  }, []);
 
   const onShareToday = useCallback(async () => {
     if (!quote) return;
@@ -95,6 +127,7 @@ export function HomeScreen({
         visible={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         onQuoteLoaded={(q) => {
+          setNewQuoteError(null);
           setCategoryQuote(q);
           setTab('new');
         }}
@@ -102,7 +135,10 @@ export function HomeScreen({
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          tab === 'new' && categoryQuote ? styles.scrollContentWithBar : null,
+        ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -155,6 +191,29 @@ export function HomeScreen({
           </>
         )}
       </ScrollView>
+
+      {tab === 'new' && categoryQuote ? (
+        <View style={styles.anotherQuoteBar}>
+          {newQuoteError ? <Text style={styles.anotherQuoteError}>{newQuoteError}</Text> : null}
+          <TouchableOpacity
+            style={[styles.anotherQuoteBtn, newQuoteLoading && styles.anotherQuoteBtnDisabled]}
+            onPress={loadNewQuote}
+            disabled={newQuoteLoading}
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel="Another quote"
+          >
+            {newQuoteLoading ? (
+              <ActivityIndicator color="#78350F" size="small" />
+            ) : (
+              <RefreshCw color="#78350F" size={17} />
+            )}
+            <Text style={styles.anotherQuoteBtnText}>
+              {newQuoteLoading ? 'Loading…' : 'Another quote'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       <View style={[styles.bottomTabs, { paddingBottom: Math.max(insets.bottom, 14) }]}>
         <TouchableOpacity
@@ -267,6 +326,9 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     flexGrow: 1,
   },
+  scrollContentWithBar: {
+    paddingBottom: 12,
+  },
   loading: {
     minHeight: 200,
     alignItems: 'center',
@@ -309,6 +371,45 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     marginBottom: 20,
+  },
+  anotherQuoteBar: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 6,
+    paddingBottom: 34,
+  },
+  anotherQuoteError: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#B91C1C',
+    textAlign: 'center',
+    marginBottom: 6,
+    paddingHorizontal: 8,
+  },
+  anotherQuoteBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(234, 88, 12, 0.35)',
+    shadowColor: '#B45309',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  anotherQuoteBtnDisabled: {
+    opacity: 0.65,
+  },
+  anotherQuoteBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#78350F',
   },
   openDrawerBtn: {
     flexDirection: 'row',

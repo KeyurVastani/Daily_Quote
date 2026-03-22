@@ -38,6 +38,25 @@ export async function fetchQuoteOfTheDayFromApi(): Promise<ApiNinjasQuote> {
   return mapApiQuoteToInternal(quote);
 }
 
+/** Random quote with no category filter (any topic). */
+export async function fetchRandomQuote(): Promise<ApiNinjasQuote> {
+  const response = await fetch(RANDOM_QUOTES_URL, {
+    method: 'GET',
+    headers: {
+      'X-Api-Key': API_NINJAS_KEY,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Quotes API error: ${response.status}`);
+  }
+
+  const json = (await response.json()) as ApiNinjasResponse;
+  const quote = Array.isArray(json) ? json[0] : json;
+  return mapApiQuoteToInternal(quote);
+}
+
 /**
  * Fetch one random quote matching ALL selected categories (comma-separated in the API).
  * Uses /v2/randomquotes so repeated taps return different quotes.

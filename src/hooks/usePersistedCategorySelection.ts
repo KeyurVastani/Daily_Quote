@@ -1,7 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
 import { appEncryptedStorage } from '../state/appEncryptedStorage';
 
-const STORAGE_KEY = 'ui:selected_quote_categories';
+export const SELECTED_QUOTE_CATEGORIES_STORAGE_KEY = 'ui:selected_quote_categories';
+
+/** Read persisted categories (e.g. before a fetch) so Home always matches the drawer. */
+export async function readSelectedCategoriesFromStorage(): Promise<string[]> {
+  try {
+    const raw = await appEncryptedStorage.getItem(SELECTED_QUOTE_CATEGORIES_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed) && parsed.every((x) => typeof x === 'string')) {
+      return parsed;
+    }
+  } catch {
+    // ignore
+  }
+  return [];
+}
 
 export function usePersistedCategorySelection() {
   const [selected, setSelected] = useState<string[]>([]);
@@ -12,7 +27,7 @@ export function usePersistedCategorySelection() {
 
     async function load() {
       try {
-        const raw = await appEncryptedStorage.getItem(STORAGE_KEY);
+        const raw = await appEncryptedStorage.getItem(SELECTED_QUOTE_CATEGORIES_STORAGE_KEY);
         if (cancelled || !raw) return;
         const parsed = JSON.parse(raw) as unknown;
         if (Array.isArray(parsed) && parsed.every((x) => typeof x === 'string')) {
@@ -33,7 +48,7 @@ export function usePersistedCategorySelection() {
   }, []);
 
   const persist = useCallback((next: string[]) => {
-    appEncryptedStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+    appEncryptedStorage.setItem(SELECTED_QUOTE_CATEGORIES_STORAGE_KEY, JSON.stringify(next)).catch(() => {});
   }, []);
 
   const toggle = useCallback(
