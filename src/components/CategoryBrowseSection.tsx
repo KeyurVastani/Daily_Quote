@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { Sparkles } from 'lucide-react-native';
 import { QUOTE_CATEGORIES, formatCategoryLabel } from '../constants/quoteCategories';
 
 type Props = {
@@ -27,12 +29,7 @@ export function CategoryBrowseSection({
 }: Props) {
   return (
     <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionHint}>
-          Pick one or more — quotes match all selected categories. Tap “Load a quote” again anytime for
-          another random match.
-        </Text>
-      </View>
+    
 
       <View style={styles.chipWrap}>
         {QUOTE_CATEGORIES.map((cat) => {
@@ -45,10 +42,20 @@ export function CategoryBrowseSection({
               accessibilityRole="checkbox"
               accessibilityState={{ checked: active }}
               accessibilityLabel={`${formatCategoryLabel(cat)} category`}
+              activeOpacity={0.85}
             >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                {formatCategoryLabel(cat)}
-              </Text>
+              {active ? (
+                <LinearGradient
+                  colors={['#FDE68A', '#FBBF24']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.chipGradient}
+                >
+                  <Text style={styles.chipTextActive}>{formatCategoryLabel(cat)}</Text>
+                </LinearGradient>
+              ) : (
+                <Text style={styles.chipText}>{formatCategoryLabel(cat)}</Text>
+              )}
             </TouchableOpacity>
           );
         })}
@@ -56,17 +63,30 @@ export function CategoryBrowseSection({
 
       <View style={styles.actions}>
         <TouchableOpacity
-          style={[styles.primaryButton, (disabledLoad || loading) && styles.primaryButtonDisabled]}
+          style={[styles.primaryTouch, (disabledLoad || loading) && styles.primaryTouchDisabled]}
           onPress={onLoadQuote}
           disabled={disabledLoad || loading}
           accessibilityRole="button"
           accessibilityLabel="Load a random quote for selected categories"
+          activeOpacity={0.92}
         >
-          {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.primaryButtonText}>Load a quote</Text>
-          )}
+          <LinearGradient
+            colors={
+              disabledLoad || loading
+                ? ['#E5E7EB', '#D1D5DB']
+                : ['#FBBF24', '#F59E0B']
+            }
+            style={styles.primaryButton}
+          >
+            {loading ? (
+              <ActivityIndicator color="#78350F" />
+            ) : (
+              <View style={styles.primaryRow}>
+                <Sparkles color="#78350F" size={18} />
+                <Text style={styles.primaryButtonText}>Load a quote</Text>
+              </View>
+            )}
+          </LinearGradient>
         </TouchableOpacity>
 
         {selected.length > 0 ? (
@@ -75,6 +95,7 @@ export function CategoryBrowseSection({
             onPress={onClearSelection}
             accessibilityRole="button"
             accessibilityLabel="Clear category selection"
+            activeOpacity={0.85}
           >
             <Text style={styles.clearButtonText}>Clear selection</Text>
           </TouchableOpacity>
@@ -86,80 +107,132 @@ export function CategoryBrowseSection({
 
 const styles = StyleSheet.create({
   section: {
-    marginTop: 8,
+    marginTop: 4,
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
   sectionHeader: {
-    marginBottom: 16,
+    marginBottom: 18,
   },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: '900',
-    color: '#0F172A',
-    letterSpacing: 0.2,
+  hintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginBottom: 10,
   },
+  sectionTitle: {
+    flex: 1,
+    flexWrap: 'wrap',
+  },
+  titlePick: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#EA580C',
+    textShadowColor: 'rgba(251, 191, 36, 0.35)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  titleThemes: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#2563EB',
+    fontStyle: 'italic',
+    textShadowColor: 'rgba(147, 197, 253, 0.4)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
   sectionHint: {
-    marginTop: 4,
-    fontSize: 13,
-    color: '#64748B',
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#475569',
     fontWeight: '600',
-    lineHeight: 18,
+  },
+  hintEmphasis: {
+    fontWeight: '900',
+    color: '#1D4ED8',
   },
   chipWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
+    marginTop: 10,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: 'rgba(15, 23, 42, 0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(15, 23, 42, 0.08)',
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: 'rgba(251, 191, 36, 0.45)',
+    backgroundColor: 'rgba(255, 249, 240, 0.95)',
   },
   chipActive: {
-    backgroundColor: 'rgba(37, 99, 235, 0.16)',
-    borderColor: 'rgba(37, 99, 235, 0.45)',
+    borderColor: '#EA580C',
+    borderWidth: 2,
+    backgroundColor: 'transparent',
+  },
+  chipGradient: {
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 999,
   },
   chipText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#334155',
+    color: '#57534E',
+    paddingHorizontal: 14,
+    paddingVertical: 9,
   },
   chipTextActive: {
-    color: '#1D4ED8',
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#78350F',
   },
   actions: {
-    marginTop: 16,
-    gap: 10,
+    marginTop: 20,
+    gap: 12,
+  },
+  primaryTouch: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#EA580C',
+    shadowColor: '#B45309',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  primaryTouchDisabled: {
+    opacity: 0.55,
+    borderColor: '#9CA3AF',
   },
   primaryButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
+    paddingVertical: 15,
+    minHeight: 52,
   },
-  primaryButtonDisabled: {
-    opacity: 0.45,
+  primaryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '800',
+    color: '#78350F',
+    fontSize: 16,
+    fontWeight: '900',
   },
   clearButton: {
     alignSelf: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(180, 83, 9, 0.2)',
   },
   clearButtonText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#64748B',
+    fontWeight: '800',
+    color: '#B45309',
   },
 });

@@ -11,8 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X } from 'lucide-react-native';
+import { Compass, Sparkles, X } from 'lucide-react-native';
 import { usePersistedCategorySelection } from '../hooks/usePersistedCategorySelection';
 import { CategoryBrowseSection } from './CategoryBrowseSection';
 import { fetchRandomQuoteByCategories } from '../api/quotesApi';
@@ -20,6 +21,8 @@ import type { Quote } from '../types/quote';
 
 const WINDOW_W = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(WINDOW_W * 0.9, 360);
+
+const DECOR = ['✦', '✧', '★'];
 
 type Props = {
   visible: boolean;
@@ -91,7 +94,7 @@ export function ExploreCategoriesDrawer({ visible, onClose, onQuoteLoaded }: Pro
 
   const backdropOpacity = progress.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 0.4],
+    outputRange: [0, 0.45],
   });
 
   if (!rendered) {
@@ -107,59 +110,97 @@ export function ExploreCategoriesDrawer({ visible, onClose, onQuoteLoaded }: Pro
 
         <Animated.View
           style={[
-            styles.panel,
+            styles.panelOuter,
             {
               width: DRAWER_WIDTH,
               transform: [{ translateX }],
             },
           ]}
         >
-          <SafeAreaView style={styles.safe} edges={['top', 'left', 'bottom']}>
-            <View style={styles.panelHeader}>
-              <View style={styles.panelHeaderText}>
-                <Text style={styles.panelTitle}>Explore</Text>
-                <Text style={styles.panelSubtitle}>Categories</Text>
-              </View>
-              <TouchableOpacity
-                onPress={onClose}
-                style={styles.closeBtn}
-                accessibilityRole="button"
-                accessibilityLabel="Close categories"
-              >
-                <X color="#64748B" size={24} strokeWidth={2.2} />
-              </TouchableOpacity>
+          <LinearGradient
+            colors={['#FFE8F3', '#F0E6FF', '#E5F3FF', '#FFF4E6']}
+            locations={[0, 0.35, 0.65, 1]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={styles.panelGradient}
+          >
+            <View pointerEvents="none" style={styles.sparkleDecor}>
+              {DECOR.map((ch, i) => (
+                <Text key={i} style={[styles.sparkleChar, SPARKLE_STYLE[i % SPARKLE_STYLE.length]]}>
+                  {ch}
+                </Text>
+              ))}
             </View>
 
-            <ScrollView
-              style={styles.scroll}
-              contentContainerStyle={styles.scrollContent}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-            >
-              {!hydrated ? (
-                <View style={styles.hydrate}>
-                  <ActivityIndicator />
+            <SafeAreaView style={styles.safe} edges={['top', 'left', 'bottom']}>
+              <View style={styles.panelHeader}>
+                <View style={styles.panelHeaderLeft}>
+                  <View style={styles.headerIconRow}>
+                    <Compass color="#2563EB" size={22} strokeWidth={2.2} />
+                    <Sparkles color="#FBBF24" size={20} />
+                  </View>
+                  <Text style={styles.panelTitleMain} accessibilityRole="header">
+                    <Text style={styles.titleExplore}>Discover </Text>
+                    <Text style={styles.titleByTheme}>by category</Text>
+                  </Text>
+                  <Text style={styles.panelSubtitle}>
+                    Choose topics that match your mood — we’ll find a quote that fits{' '}
+                    <Text style={styles.subtitleEmphasis}>all</Text> of them at once.
+                  </Text>
                 </View>
-              ) : (
-                <>
-                  <CategoryBrowseSection
-                    selected={selected}
-                    onToggleCategory={toggle}
-                    onClearSelection={clear}
-                    onLoadQuote={loadQuote}
-                    loading={loading}
-                    disabledLoad={selected.length === 0}
-                  />
-                  {loadError ? <Text style={styles.loadError}>{loadError}</Text> : null}
-                </>
-              )}
-            </ScrollView>
-          </SafeAreaView>
+                <TouchableOpacity
+                  onPress={onClose}
+                  style={styles.closePill}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close categories"
+                  activeOpacity={0.88}
+                >
+                  <X color="#2563EB" size={22} strokeWidth={2.4} />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                {!hydrated ? (
+                  <View style={styles.hydrate}>
+                    <ActivityIndicator color="#EA580C" size="large" />
+                    <Text style={styles.hydrateText}>Loading your saved picks…</Text>
+                  </View>
+                ) : (
+                  <>
+                    <CategoryBrowseSection
+                      selected={selected}
+                      onToggleCategory={toggle}
+                      onClearSelection={clear}
+                      onLoadQuote={loadQuote}
+                      loading={loading}
+                      disabledLoad={selected.length === 0}
+                    />
+                    {loadError ? (
+                      <View style={styles.errorBox}>
+                        <Text style={styles.loadError}>{loadError}</Text>
+                      </View>
+                    ) : null}
+                  </>
+                )}
+              </ScrollView>
+            </SafeAreaView>
+          </LinearGradient>
         </Animated.View>
       </View>
     </Modal>
   );
 }
+
+const SPARKLE_STYLE = [
+  { top: 12, right: 14, fontSize: 12, opacity: 0.65 },
+  { top: 88, left: 10, fontSize: 14, opacity: 0.5 },
+  { top: 160, right: 8, fontSize: 11, opacity: 0.55 },
+] as const;
 
 const styles = StyleSheet.create({
   root: {
@@ -167,74 +208,145 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#5B3A6E',
   },
-  panel: {
+  panelOuter: {
     position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.97)',
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 6, height: 0 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    elevation: 16,
-    borderRightWidth: 1,
+    borderTopRightRadius: 26,
+    borderBottomRightRadius: 26,
+    overflow: 'hidden',
+    shadowColor: '#7C2D12',
+    shadowOffset: { width: 8, height: 0 },
+    shadowOpacity: 0.22,
+    shadowRadius: 20,
+    elevation: 20,
+  },
+  panelGradient: {
+    flex: 1,
+    borderTopRightRadius: 26,
+    borderBottomRightRadius: 26,
+    borderRightWidth: 3,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(15, 23, 42, 0.08)',
+    borderColor: 'rgba(251, 191, 36, 0.85)',
+  },
+  sparkleDecor: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
+  sparkleChar: {
+    position: 'absolute',
+    color: 'rgba(255, 255, 255, 0.9)',
+    textShadowColor: 'rgba(251, 191, 36, 0.45)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 6,
   },
   safe: {
     flex: 1,
+    zIndex: 1,
   },
   panelHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(15, 23, 42, 0.08)',
+    paddingTop: 10,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(251, 191, 36, 0.35)',
   },
-  panelHeaderText: {
+  panelHeaderLeft: {
     flex: 1,
+    paddingRight: 8,
   },
-  panelTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: '#0F172A',
+  headerIconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  panelTitleMain: {
+    marginBottom: 6,
+    marginTop: 10,
+  },
+  titleExplore: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#EA580C',
+    textShadowColor: 'rgba(251, 191, 36, 0.4)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5,
+  },
+  titleByTheme: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#2563EB',
+    fontStyle: 'italic',
+    textShadowColor: 'rgba(147, 197, 253, 0.45)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 5,
   },
   panelSubtitle: {
-    marginTop: 2,
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#64748B',
+    color: 'rgba(30, 58, 95, 0.78)',
+    lineHeight: 21,
   },
-  closeBtn: {
-    padding: 8,
-    marginRight: -4,
+  subtitleEmphasis: {
+    fontWeight: '900',
+    color: '#1D4ED8',
+  },
+  closePill: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: 'rgba(37, 99, 235, 0.22)',
+    marginTop: 2,
+    shadowColor: '#1E3A5F',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 28,
+    paddingBottom: 32,
   },
   hydrate: {
-    minHeight: 160,
+    minHeight: 180,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  hydrateText: {
+    marginTop: 14,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#57534E',
+  },
+  errorBox: {
+    marginHorizontal: 16,
+    marginTop: 4,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: 'rgba(254, 226, 226, 0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(220, 38, 38, 0.25)',
   },
   loadError: {
-    marginHorizontal: 16,
-    marginTop: 8,
     color: '#B91C1C',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     lineHeight: 20,
+    textAlign: 'center',
   },
 });

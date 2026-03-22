@@ -143,7 +143,8 @@ export function WhimsicalQuoteCard({
 
           <View style={styles.decoBottom}>
             <Text style={styles.miniStar}>★</Text>
-            <Text style={styles.miniHeart}>♥</Text>
+            <Text style={styles.miniStar}>★</Text>
+            <Text style={styles.miniStar}>★</Text>
           </View>
 
           <View style={styles.actions}>
