@@ -313,7 +313,6 @@ const styles = StyleSheet.create({
   },
   actTouch: {
     borderRadius: 14,
-    overflow: 'hidden',
   },
   actBtn: {
     width: 42,
@@ -325,5 +324,6 @@ const styles = StyleSheet.create({
   actBtnOutline: {
     borderWidth: 1.5,
     borderColor: 'rgba(225, 29, 72, 0.25)',
+    borderRadius:14
   },
 });
