@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Platform,
@@ -11,6 +11,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Copy, CopyCheck, Heart, Share2, Sun } from 'lucide-react-native';
 import type { Quote } from '../../types/quote';
+import ViewShot from 'react-native-view-shot';
+import Share from 'react-native-share';
 
 const ICON = 16;
 
@@ -44,7 +46,7 @@ export function WhimsicalQuoteCard({
   const anim = useRef(new Animated.Value(0)).current;
   const saveIconScale = useRef(new Animated.Value(1)).current;
   const [isCopied, setIsCopied] = useState(false);
-
+  const viewRef = useRef<ViewShot | null>(null);
   const chips = useMemo(() => {
     const list: string[] = [];
     if (quote.work) list.push(quote.work);
@@ -75,6 +77,23 @@ export function WhimsicalQuoteCard({
     setTimeout(() => setIsCopied(false), 900);
   };
 
+  const handleShareSnapshot = async () => {
+    try {
+      const uri = await viewRef.current?.capture?.(); // capture() is optional in library types
+      if (!uri) return;
+
+      const options = {
+        title: 'Daily Quote',
+        message: `${quote.text}\nAuthor: ${quote.author}`, // 👈 TEXT
+        url: `file://${uri}`, // 👈 IMAGE
+        type: 'image/png',
+      };
+      await Share.open(options);
+    } catch (error) {
+      console.log('Error sharing quote:', error);
+    }
+  }
+
   const serif = Platform.select({ ios: 'Georgia', android: 'serif', default: undefined });
   const scriptAuthor = Platform.select({
     ios: 'Georgia',
@@ -85,6 +104,7 @@ export function WhimsicalQuoteCard({
   const { tokens, highlightIndex } = quoteTokensWithHighlightIndex(quote.text);
 
   return (
+    <ViewShot ref={viewRef} options={{ format: 'png', quality: 1 }}>
     <Animated.View
       style={[
         styles.outer,
@@ -189,7 +209,7 @@ export function WhimsicalQuoteCard({
             </TouchableOpacity>
 
             {onShare ? (
-              <TouchableOpacity onPress={onShare} style={styles.actTouch} activeOpacity={0.9}>
+              <TouchableOpacity onPress={handleShareSnapshot} style={styles.actTouch} activeOpacity={0.9}>
                 <LinearGradient colors={['#93C5FD', '#3B82F6']} style={styles.actBtn}>
                   <Share2 color="#FFFFFF" size={ICON} />
                 </LinearGradient>
@@ -199,6 +219,7 @@ export function WhimsicalQuoteCard({
         </View>
       </View>
     </Animated.View>
+    </ViewShot>
   );
 }
 

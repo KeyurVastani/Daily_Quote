@@ -1,4 +1,4 @@
-import { API_NINJAS_KEY } from '@env';
+import { API_NINJAS_BASE_URL, API_NINJAS_KEY } from '@env';
 
 type ApiNinjasQuote = {
   quote: string;
@@ -9,9 +9,23 @@ type ApiNinjasQuote = {
 
 type ApiNinjasResponse = ApiNinjasQuote | ApiNinjasQuote[];
 
-const QUOTE_OF_THE_DAY_URL = 'https://api.api-ninjas.com/v2/quoteoftheday';
+/** Default matches API Ninjas REST host (see https://api-ninjas.com). */
+const DEFAULT_API_BASE = 'https://api.api-ninjas.com';
+
+function getApiBaseUrl(): string {
+  const trimmed = API_NINJAS_BASE_URL?.trim?.() ?? '';
+  const base = trimmed || DEFAULT_API_BASE;
+  return base.replace(/\/+$/, '');
+}
+
+function quoteOfTheDayUrl(): string {
+  return `${getApiBaseUrl()}/v2/quoteoftheday`;
+}
+
 /** Random quotes filtered by categories (varies per request). Same filters as /v2/quotes. */
-const RANDOM_QUOTES_URL = 'https://api.api-ninjas.com/v2/randomquotes';
+function randomQuotesUrl(): string {
+  return `${getApiBaseUrl()}/v2/randomquotes`;
+}
 
 function mapApiQuoteToInternal(q: ApiNinjasQuote | undefined): ApiNinjasQuote {
   if (!q?.quote) {
@@ -21,7 +35,7 @@ function mapApiQuoteToInternal(q: ApiNinjasQuote | undefined): ApiNinjasQuote {
 }
 
 export async function fetchQuoteOfTheDayFromApi(): Promise<ApiNinjasQuote> {
-  const response = await fetch(QUOTE_OF_THE_DAY_URL, {
+  const response = await fetch(quoteOfTheDayUrl(), {
     method: 'GET',
     headers: {
       'X-Api-Key': API_NINJAS_KEY,
@@ -40,7 +54,7 @@ export async function fetchQuoteOfTheDayFromApi(): Promise<ApiNinjasQuote> {
 
 /** Random quote with no category filter (any topic). */
 export async function fetchRandomQuote(): Promise<ApiNinjasQuote> {
-  const response = await fetch(RANDOM_QUOTES_URL, {
+  const response = await fetch(randomQuotesUrl(), {
     method: 'GET',
     headers: {
       'X-Api-Key': API_NINJAS_KEY,
@@ -70,7 +84,7 @@ export async function fetchRandomQuoteByCategories(categories: string[]): Promis
   const params = new URLSearchParams();
   params.set('categories', trimmed.join(','));
 
-  const response = await fetch(`${RANDOM_QUOTES_URL}?${params.toString()}`, {
+  const response = await fetch(`${randomQuotesUrl()}?${params.toString()}`, {
     method: 'GET',
     headers: {
       'X-Api-Key': API_NINJAS_KEY,
