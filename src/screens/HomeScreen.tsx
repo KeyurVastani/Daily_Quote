@@ -177,7 +177,7 @@ export function HomeScreen({
                   activeOpacity={0.9}
                 >
                   <Sparkles color="#92400E" size={20} />
-                  <Text style={styles.openDrawerBtnText}>Open themes</Text>
+                  <Text style={styles.openDrawerBtnText}>Open Categories</Text>
                 </TouchableOpacity>
               </View>
             ) : (
