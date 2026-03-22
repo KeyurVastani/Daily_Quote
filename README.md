@@ -2,6 +2,40 @@
 
 React Native app for daily quotes, favorites, category discovery, and sharing. Quotes are loaded from [API Ninjas](https://api-ninjas.com/) (Quotes API v2).
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/home_screen.png" alt="Home — daily quote" width="240" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/categories.png" alt="Discover by category" width="240" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/favourite_screen.png" alt="Favorites" width="240" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/splash_screen.png" alt="Splash screen" width="240" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/get_quotes.png" alt="Get quotes" width="240" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/app_icon.png" alt="App icon" width="120" />
+</p>
+
+More images and descriptions: [`docs/screenshots/README.md`](docs/screenshots/README.md).
+
+### App demo recording
+
+Screen recording of the app in use:
+
+<p align="center">
+  <video src="docs/screenshots/Video.mov" controls width="320" playsInline>
+    <a href="docs/screenshots/Video.mov">Open Video.mov</a> (if the player does not show)
+  </video>
+</p>
+
+**Direct link:** [Video.mov](docs/screenshots/Video.mov)
+
+> **Note:** GitHub’s README video player works in many browsers; if it doesn’t, use the link above or open the file from [`docs/screenshots/`](docs/screenshots/). Very large `.mov` files may need [Git LFS](https://git-lfs.com/) if you hit GitHub’s file size limits.
+
 ---
 
 ## Prerequisites
