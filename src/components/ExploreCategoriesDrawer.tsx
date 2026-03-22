@@ -22,7 +22,7 @@ import type { Quote } from '../types/quote';
 const WINDOW_W = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(WINDOW_W * 0.9, 360);
 
-const DECOR = ['✦', '✧', '★'];
+const DECOR = ['✦', '✧', '★', '✿', '˚'];
 
 type Props = {
   visible: boolean;
@@ -118,10 +118,10 @@ export function ExploreCategoriesDrawer({ visible, onClose, onQuoteLoaded }: Pro
           ]}
         >
           <LinearGradient
-            colors={['#FFE8F3', '#F0E6FF', '#E5F3FF', '#FFF4E6']}
-            locations={[0, 0.35, 0.65, 1]}
+            colors={['#FFF0F7', '#EDE9FE', '#DBEAFE', '#FFF7ED']}
+            locations={[0, 0.32, 0.62, 1]}
             start={{ x: 0, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
+            end={{ x: 0.45, y: 1 }}
             style={styles.panelGradient}
           >
             <View pointerEvents="none" style={styles.sparkleDecor}>
@@ -134,20 +134,6 @@ export function ExploreCategoriesDrawer({ visible, onClose, onQuoteLoaded }: Pro
 
             <SafeAreaView style={styles.safe} edges={['top', 'left', 'bottom']}>
               <View style={styles.panelHeader}>
-                <View style={styles.panelHeaderLeft}>
-                  <View style={styles.headerIconRow}>
-                    <Compass color="#2563EB" size={22} strokeWidth={2.2} />
-                    <Sparkles color="#FBBF24" size={20} />
-                  </View>
-                  <Text style={styles.panelTitleMain} accessibilityRole="header">
-                    <Text style={styles.titleExplore}>Discover </Text>
-                    <Text style={styles.titleByTheme}>by category</Text>
-                  </Text>
-                  <Text style={styles.panelSubtitle}>
-                    Choose topics that match your mood — we’ll find a quote that fits{' '}
-                    <Text style={styles.subtitleEmphasis}>all</Text> of them at once.
-                  </Text>
-                </View>
                 <TouchableOpacity
                   onPress={onClose}
                   style={styles.closePill}
@@ -155,8 +141,33 @@ export function ExploreCategoriesDrawer({ visible, onClose, onQuoteLoaded }: Pro
                   accessibilityLabel="Close categories"
                   activeOpacity={0.88}
                 >
-                  <X color="#2563EB" size={22} strokeWidth={2.4} />
+                  <LinearGradient
+                    colors={['rgba(255,255,255,0.98)', 'rgba(239, 246, 255, 0.95)']}
+                    style={styles.closePillGradient}
+                  >
+                    <X color="#1D4ED8" size={21} strokeWidth={2.5} />
+                  </LinearGradient>
                 </TouchableOpacity>
+
+                <View style={styles.headerCard}>
+                  <View style={styles.headerIconRow}>
+                    <View style={styles.headerIconBubble}>
+                      <Compass color="#1D4ED8" size={20} strokeWidth={2.3} />
+                    </View>
+                    <View style={[styles.headerIconBubble, styles.headerIconBubbleAlt]}>
+                      <Sparkles color="#D97706" size={18} strokeWidth={2.2} />
+                    </View>
+                  </View>
+                  <Text style={styles.panelTitleMain} accessibilityRole="header">
+                    <Text style={styles.titleExplore}>Discover </Text>
+                    <Text style={styles.titleByTheme}>by category</Text>
+                  </Text>
+                  <View style={styles.subtitlePill}>
+                    <Text style={styles.subtitlePillText}>Multi-select</Text>
+                    <Text style={styles.subtitlePillDot}>·</Text>
+                    <Text style={styles.subtitlePillText}>All themes apply</Text>
+                  </View>
+                </View>
               </View>
 
               <ScrollView
@@ -197,9 +208,11 @@ export function ExploreCategoriesDrawer({ visible, onClose, onQuoteLoaded }: Pro
 }
 
 const SPARKLE_STYLE = [
-  { top: 12, right: 14, fontSize: 12, opacity: 0.65 },
-  { top: 88, left: 10, fontSize: 14, opacity: 0.5 },
-  { top: 160, right: 8, fontSize: 11, opacity: 0.55 },
+  { top: 14, right: 18, fontSize: 13, opacity: 0.7 },
+  { top: 72, left: 12, fontSize: 15, opacity: 0.55 },
+  { top: 140, right: 10, fontSize: 12, opacity: 0.6 },
+  { top: 220, left: 16, fontSize: 11, opacity: 0.5 },
+  { top: 320, right: 20, fontSize: 14, opacity: 0.45 },
 ] as const;
 
 const styles = StyleSheet.create({
@@ -208,30 +221,30 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#5B3A6E',
+    backgroundColor: '#3B2A5C',
   },
   panelOuter: {
     position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,
-    borderTopRightRadius: 26,
-    borderBottomRightRadius: 26,
+    borderTopRightRadius: 28,
+    borderBottomRightRadius: 28,
     overflow: 'hidden',
-    shadowColor: '#7C2D12',
-    shadowOffset: { width: 8, height: 0 },
-    shadowOpacity: 0.22,
-    shadowRadius: 20,
-    elevation: 20,
+    shadowColor: '#4C1D95',
+    shadowOffset: { width: 10, height: 0 },
+    shadowOpacity: 0.28,
+    shadowRadius: 24,
+    elevation: 24,
   },
   panelGradient: {
     flex: 1,
-    borderTopRightRadius: 26,
-    borderBottomRightRadius: 26,
+    borderTopRightRadius: 28,
+    borderBottomRightRadius: 28,
     borderRightWidth: 3,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(251, 191, 36, 0.85)',
+    borderColor: 'rgba(251, 191, 36, 0.75)',
   },
   sparkleDecor: {
     ...StyleSheet.absoluteFillObject,
@@ -239,81 +252,130 @@ const styles = StyleSheet.create({
   },
   sparkleChar: {
     position: 'absolute',
-    color: 'rgba(255, 255, 255, 0.9)',
-    textShadowColor: 'rgba(251, 191, 36, 0.45)',
+    color: 'rgba(255, 255, 255, 0.92)',
+    textShadowColor: 'rgba(251, 191, 36, 0.5)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 6,
+    textShadowRadius: 8,
   },
   safe: {
     flex: 1,
     zIndex: 1,
   },
   panelHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(251, 191, 36, 0.35)',
+    paddingHorizontal: 14,
+    paddingTop: 56,
+    paddingBottom: 12,
+    position: 'relative',
   },
-  panelHeaderLeft: {
-    flex: 1,
-    paddingRight: 8,
+  headerCard: {
+    marginTop: 10,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 18,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.52)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.95)',
+    shadowColor: '#6366F1',
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
   },
   headerIconRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
+    gap: 10,
+    marginBottom: 12,
   },
-  panelTitleMain: {
-    marginBottom: 6,
-    marginTop: 10,
-  },
-  titleExplore: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#EA580C',
-    textShadowColor: 'rgba(251, 191, 36, 0.4)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 5,
-  },
-  titleByTheme: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#2563EB',
-    fontStyle: 'italic',
-    textShadowColor: 'rgba(147, 197, 253, 0.45)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 5,
-  },
-  panelSubtitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: 'rgba(30, 58, 95, 0.78)',
-    lineHeight: 21,
-  },
-  subtitleEmphasis: {
-    fontWeight: '900',
-    color: '#1D4ED8',
-  },
-  closePill: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: 'rgba(255,255,255,0.92)',
+  headerIconBubble: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: 'rgba(37, 99, 235, 0.22)',
-    marginTop: 2,
-    shadowColor: '#1E3A5F',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    borderWidth: 1,
+    borderColor: 'rgba(37, 99, 235, 0.15)',
+    shadowColor: '#2563EB',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
     elevation: 3,
+  },
+  headerIconBubbleAlt: {
+    borderColor: 'rgba(245, 158, 11, 0.25)',
+    shadowColor: '#EA580C',
+  },
+  panelTitleMain: {
+    marginBottom: 12,
+  },
+  titleExplore: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#EA580C',
+    letterSpacing: -0.5,
+    textShadowColor: 'rgba(251, 191, 36, 0.45)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
+  },
+  titleByTheme: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#1D4ED8',
+    fontStyle: 'italic',
+    letterSpacing: -0.3,
+    textShadowColor: 'rgba(147, 197, 253, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
+  },
+  subtitlePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    flexWrap: 'wrap',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.65)',
+    borderWidth: 1,
+    borderColor: 'rgba(30, 58, 95, 0.08)',
+  },
+  subtitlePillText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#475569',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  subtitlePillDot: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#94A3B8',
+  },
+  closePill: {
+    position: 'absolute',
+    top: 10,
+    right: 14,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    overflow: 'hidden',
+    zIndex: 2,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: '#1E3A5F',
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+  closePillGradient: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scroll: {
     flex: 1,
@@ -334,13 +396,18 @@ const styles = StyleSheet.create({
     color: '#57534E',
   },
   errorBox: {
-    marginHorizontal: 16,
-    marginTop: 4,
-    padding: 14,
-    borderRadius: 16,
-    backgroundColor: 'rgba(254, 226, 226, 0.85)',
-    borderWidth: 1,
-    borderColor: 'rgba(220, 38, 38, 0.25)',
+    marginHorizontal: 14,
+    marginTop: 8,
+    padding: 16,
+    borderRadius: 18,
+    backgroundColor: 'rgba(254, 242, 242, 0.92)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(248, 113, 113, 0.35)',
+    shadowColor: '#DC2626',
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
   loadError: {
     color: '#B91C1C',
