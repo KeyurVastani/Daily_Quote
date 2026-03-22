@@ -17,7 +17,16 @@ jest.mock('react-native-encrypted-storage', () => ({
 }));
 
 test('renders correctly', async () => {
+  jest.useFakeTimers();
+
   await ReactTestRenderer.act(() => {
     ReactTestRenderer.create(<App />);
   });
+
+  // SplashOverlay: visible ~2s + fade ~0.5s
+  await ReactTestRenderer.act(() => {
+    jest.advanceTimersByTime(3000);
+  });
+
+  jest.useRealTimers();
 });
